@@ -21,28 +21,24 @@ import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.text.font.FontWeight.Companion.W400
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import com.example.hackathonjudgingtracker.data.domain.hackathons.Hackathon
 import com.example.hackathonjudgingtracker.data.domain.judges.Judge
 import com.example.hackathonjudgingtracker.data.domain.projects.Project
+import com.example.hackathonjudgingtracker.navigation.Screen
 
 
 @Composable
-fun HomeScreen(homeViewModel: HomeViewModel) {
+fun HomeScreen(
+    homeViewModel: HomeViewModel = HomeViewModel(),
+    navController: NavController
+) {
     val numProjects = homeViewModel.numProjects.collectAsState()
     val numJudges = homeViewModel.numJudges.collectAsState()
     val numPassThroughs = homeViewModel.numPassThroughs.collectAsState()
     val lengthEvent = homeViewModel.lengthEvent.collectAsState()
     val numProjectsPerJudge = homeViewModel.numProjectsPerJudge.collectAsState()
     val timePerProject = homeViewModel.timePerProject.collectAsState()
-
-    homeViewModel.getProjects()
-    val projects = homeViewModel.projectList.collectAsState()
-
-    homeViewModel.getHackathons()
-    val hackathons = homeViewModel.hackathonList.collectAsState()
-
-    homeViewModel.getJudges()
-    val judges = homeViewModel.judgeList.collectAsState()
 
     HomeContent(
         numProjects = numProjects.value,
@@ -56,14 +52,15 @@ fun HomeScreen(homeViewModel: HomeViewModel) {
         calculateValues = { homeViewModel.calculateValues() },
         numProjectsPerJudge = numProjectsPerJudge.value.toString(),
         timePerProject = timePerProject.value.toString(),
-        projects = projects.value,
-        hackathons = hackathons.value,
-        judges = judges.value
+        navigateToHackathonSelectionScreen = {
+            navController.navigate(Screen.HackathonSelectionScreen.route)
+        }
     )
 }
 
 @Composable
 fun HomeContent(
+    navigateToHackathonSelectionScreen: () -> Unit,
     modifier: Modifier = Modifier.fillMaxWidth(),
     numProjects: String,
     onNumProjectsChanged: (String) -> Unit,
@@ -76,11 +73,14 @@ fun HomeContent(
     calculateValues: () -> Unit,
     numProjectsPerJudge: String,
     timePerProject: String,
-    projects: List<Project>,
-    hackathons: List<Hackathon>,
-    judges: List<Judge>
 ) {
     Column {
+        Button(
+            onClick = navigateToHackathonSelectionScreen,
+            modifier = Modifier
+        ) {
+            Text(text = "Hackathon Organizer Flow")
+        }
         Row(modifier = modifier) {
             TextField(
                 value = numProjects,
@@ -118,53 +118,6 @@ fun HomeContent(
         }
         Text(text = "Number of Projects Per Judge: $numProjectsPerJudge")
         Text(text = "Time each judge should spend on each table (in Minutes): $timePerProject")
-
-        Surface(
-            modifier = Modifier.fillMaxWidth(),
-            color = Color.LightGray,
-        ) {
-            Column(
-                modifier = Modifier.verticalScroll(rememberScrollState()),
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                Text(
-                    text = "Project List",
-                    fontSize = 30.sp,
-                    fontWeight = W400
-                )
-                Column(
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    projects.forEach { project ->
-                        Text(text = project.fields.Name)
-                    }
-                }
-                Text(
-                    text = "Hackathon List",
-                    fontSize = 30.sp,
-                    fontWeight = W400
-                )
-                Column(
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    hackathons.forEach { hackathon ->
-                        Text(text = hackathon.fields.Name)
-                    }
-                }
-                Text(
-                    text = "Judge List",
-                    fontSize = 30.sp,
-                    fontWeight = W400
-                )
-                Column(
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    judges.forEach { judge ->
-                        Text(text = judge.fields.Name)
-                    }
-                }
-            }
-        }
     }
 }
 
@@ -184,9 +137,7 @@ fun HomeContentPreview() {
         calculateValues = {},
         numProjectsPerJudge = "20",
         timePerProject = "9",
-        projects = listOf(),
-        hackathons = listOf(),
-        judges = listOf()
+        navigateToHackathonSelectionScreen = {}
     )
 }
 
@@ -206,8 +157,6 @@ fun EmptyHomeContentPreview() {
         calculateValues = {},
         numProjectsPerJudge = "",
         timePerProject = "",
-        projects = listOf(),
-        hackathons = listOf(),
-        judges = listOf()
+        navigateToHackathonSelectionScreen = {}
     )
 }

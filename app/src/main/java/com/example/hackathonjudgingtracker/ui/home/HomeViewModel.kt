@@ -51,35 +51,4 @@ class HomeViewModel : ViewModel() {
             (numProjects.value.toInt() * numPassThroughs.value.toInt()) / numJudges.value.toInt()
         _timePerProject.value = lengthEvent.value.toInt() / numProjectsPerJudge.value
     }
-
-    private val _projectsList = MutableStateFlow(listOf<Project>())
-    val projectList: StateFlow<List<Project>> = _projectsList
-
-    private val _hackathonList = MutableStateFlow(listOf<Hackathon>())
-    val hackathonList: StateFlow<List<Hackathon>> = _hackathonList
-
-    private val _judgesList = MutableStateFlow(listOf<Judge>())
-    val judgeList: StateFlow<List<Judge>> = _judgesList
-
-    fun getProjects() {
-        viewModelScope.launch {
-            _projectsList.value = AirtableNetwork.retrofit.getProjects().records
-            Log.d("hvm projects", projectList.value.toString())
-        }
-    }
-
-    fun getHackathons() {
-        viewModelScope.launch {
-            _hackathonList.value = AirtableNetwork.retrofit.getHackathon().records
-            Log.d("hvm hackathons", hackathonList.value.toString())
-        }
-    }
-
-    fun getJudges() {
-        viewModelScope.launch {
-            _judgesList.value = AirtableNetwork.retrofit.getJudges().records
-            Log.d("hvm judge", judgeList.value.toString())
-        }
-    }
-
 }
