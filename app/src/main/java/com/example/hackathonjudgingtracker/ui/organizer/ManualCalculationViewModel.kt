@@ -1,17 +1,20 @@
-package com.example.hackathonjudgingtracker.ui.home
+package com.example.hackathonjudgingtracker.ui.organizer
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
-import com.example.hackathonjudgingtracker.data.domain.hackathons.Hackathon
-import com.example.hackathonjudgingtracker.data.domain.judges.Judge
-import com.example.hackathonjudgingtracker.data.domain.projects.Project
-import com.example.hackathonjudgingtracker.data.network.AirtableNetwork
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.asStateFlow
 
-class HomeViewModel : ViewModel() {
+data class ManualCalculationUiState(
+    var numProjects: String = "",
+    val numJudges: String = "",
+    val numPassThroughs: String = "",
+    val lengthEvent: String = "",
+    val numProjectsPerJudge: Int = 0,
+    val timePerProject: Int = 0
+)
+
+class ManualCalculationViewModel : ViewModel() {
     private val _numProjects = MutableStateFlow("")
     val numProjects: StateFlow<String> = _numProjects
 
@@ -29,6 +32,10 @@ class HomeViewModel : ViewModel() {
 
     private val _timePerProject = MutableStateFlow(0)
     val timePerProject: StateFlow<Int> = _timePerProject
+
+    // TODO MOVE ALL VALUES INTO UISTATE
+    private val _manualCalculationUiState = MutableStateFlow(ManualCalculationUiState())
+    val manualCalculationUiState: StateFlow<ManualCalculationUiState> = _manualCalculationUiState.asStateFlow()
 
     fun updateNumProjects(numProjects: String) {
         _numProjects.value = numProjects

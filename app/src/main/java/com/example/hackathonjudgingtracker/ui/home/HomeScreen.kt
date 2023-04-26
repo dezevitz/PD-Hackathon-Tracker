@@ -29,29 +29,11 @@ import com.example.hackathonjudgingtracker.navigation.Screen
 
 
 @Composable
-fun HomeScreen(
-    homeViewModel: HomeViewModel = HomeViewModel(),
-    navController: NavController
-) {
-    val numProjects = homeViewModel.numProjects.collectAsState()
-    val numJudges = homeViewModel.numJudges.collectAsState()
-    val numPassThroughs = homeViewModel.numPassThroughs.collectAsState()
-    val lengthEvent = homeViewModel.lengthEvent.collectAsState()
-    val numProjectsPerJudge = homeViewModel.numProjectsPerJudge.collectAsState()
-    val timePerProject = homeViewModel.timePerProject.collectAsState()
-
+fun HomeScreen(navController: NavController) {
     HomeContent(
-        numProjects = numProjects.value,
-        onNumProjectsChanged = { homeViewModel.updateNumProjects(it) },
-        numJudges = numJudges.value,
-        onNumJudgesChanged = { homeViewModel.updateNumJudges(it) },
-        numPassThroughs = numPassThroughs.value,
-        onNumPassThroughsChanged = { homeViewModel.updateNumPassThroughs(it) },
-        lengthEvent = lengthEvent.value,
-        onLengthEventChanged = { homeViewModel.updateLengthEvent(it) },
-        calculateValues = { homeViewModel.calculateValues() },
-        numProjectsPerJudge = numProjectsPerJudge.value.toString(),
-        timePerProject = timePerProject.value.toString(),
+        navigateToManualCalculationScreen = {
+            navController.navigate(Screen.ManualCalculationScreen.route)
+        },
         navigateToHackathonSelectionScreen = {
             navController.navigate(Screen.HackathonSelectionScreen.route)
         }
@@ -60,64 +42,16 @@ fun HomeScreen(
 
 @Composable
 fun HomeContent(
-    navigateToHackathonSelectionScreen: () -> Unit,
-    modifier: Modifier = Modifier.fillMaxWidth(),
-    numProjects: String,
-    onNumProjectsChanged: (String) -> Unit,
-    numJudges: String,
-    onNumJudgesChanged: (String) -> Unit,
-    numPassThroughs: String,
-    onNumPassThroughsChanged: (String) -> Unit,
-    lengthEvent: String,
-    onLengthEventChanged: (String) -> Unit,
-    calculateValues: () -> Unit,
-    numProjectsPerJudge: String,
-    timePerProject: String,
+    navigateToManualCalculationScreen: () -> Unit,
+    navigateToHackathonSelectionScreen: () -> Unit
 ) {
     Column {
-        Button(
-            onClick = navigateToHackathonSelectionScreen,
-            modifier = Modifier
-        ) {
-            Text(text = "Hackathon Organizer Flow")
+        Button(onClick = navigateToManualCalculationScreen) {
+            Text(text = "Manually Calculate")
         }
-        Row(modifier = modifier) {
-            TextField(
-                value = numProjects,
-                onValueChange = onNumProjectsChanged,
-                modifier = modifier,
-                label = { Text(text = "Number of Projects: ") }
-            )
+        Button(onClick = navigateToHackathonSelectionScreen) {
+            Text(text = "Select Hackathon")
         }
-        Row(modifier = modifier) {
-            TextField(
-                value = numJudges,
-                onValueChange = onNumJudgesChanged,
-                modifier = modifier,
-                label = { Text(text = "Number of Judges: ") }
-            )
-        }
-        Row(modifier = modifier) {
-            TextField(
-                value = numPassThroughs,
-                onValueChange = onNumPassThroughsChanged,
-                modifier = modifier,
-                label = { Text(text = "How Many Times Should Each Project Be Seen? ") }
-            )
-        }
-        Row(modifier = modifier) {
-            TextField(
-                value = lengthEvent,
-                onValueChange = onLengthEventChanged,
-                modifier = modifier,
-                label = { Text(text = "How Long Is Judging?(Minutes) ") }
-            )
-        }
-        Button(onClick = { calculateValues() }) {
-            Text(text = "Calculate")
-        }
-        Text(text = "Number of Projects Per Judge: $numProjectsPerJudge")
-        Text(text = "Time each judge should spend on each table (in Minutes): $timePerProject")
     }
 }
 
@@ -126,37 +60,7 @@ fun HomeContent(
 @Composable
 fun HomeContentPreview() {
     HomeContent(
-        numProjects = "100",
-        onNumProjectsChanged = {},
-        numJudges = "10",
-        onNumJudgesChanged = {},
-        numPassThroughs = "2",
-        onNumPassThroughsChanged = {},
-        lengthEvent = "180",
-        onLengthEventChanged = {},
-        calculateValues = {},
-        numProjectsPerJudge = "20",
-        timePerProject = "9",
-        navigateToHackathonSelectionScreen = {}
-    )
-}
-
-@Preview
-@Preview(name = "dark mode", uiMode = Configuration.UI_MODE_NIGHT_YES)
-@Composable
-fun EmptyHomeContentPreview() {
-    HomeContent(
-        numProjects = "",
-        onNumProjectsChanged = {},
-        numJudges = "",
-        onNumJudgesChanged = {},
-        numPassThroughs = "",
-        onNumPassThroughsChanged = {},
-        lengthEvent = "",
-        onLengthEventChanged = {},
-        calculateValues = {},
-        numProjectsPerJudge = "",
-        timePerProject = "",
+        navigateToManualCalculationScreen = {},
         navigateToHackathonSelectionScreen = {}
     )
 }
