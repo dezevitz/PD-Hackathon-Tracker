@@ -21,149 +21,36 @@ import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.text.font.FontWeight.Companion.W400
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import com.example.hackathonjudgingtracker.data.domain.hackathons.Hackathon
 import com.example.hackathonjudgingtracker.data.domain.judges.Judge
 import com.example.hackathonjudgingtracker.data.domain.projects.Project
+import com.example.hackathonjudgingtracker.navigation.Screen
 
 
 @Composable
-fun HomeScreen(homeViewModel: HomeViewModel) {
-    val numProjects = homeViewModel.numProjects.collectAsState()
-    val numJudges = homeViewModel.numJudges.collectAsState()
-    val numPassThroughs = homeViewModel.numPassThroughs.collectAsState()
-    val lengthEvent = homeViewModel.lengthEvent.collectAsState()
-    val numProjectsPerJudge = homeViewModel.numProjectsPerJudge.collectAsState()
-    val timePerProject = homeViewModel.timePerProject.collectAsState()
-
-    homeViewModel.getProjects()
-    val projects = homeViewModel.projectList.collectAsState()
-
-    homeViewModel.getHackathons()
-    val hackathons = homeViewModel.hackathonList.collectAsState()
-
-    homeViewModel.getJudges()
-    val judges = homeViewModel.judgeList.collectAsState()
-
+fun HomeScreen(navController: NavController) {
     HomeContent(
-        numProjects = numProjects.value,
-        onNumProjectsChanged = { homeViewModel.updateNumProjects(it) },
-        numJudges = numJudges.value,
-        onNumJudgesChanged = { homeViewModel.updateNumJudges(it) },
-        numPassThroughs = numPassThroughs.value,
-        onNumPassThroughsChanged = { homeViewModel.updateNumPassThroughs(it) },
-        lengthEvent = lengthEvent.value,
-        onLengthEventChanged = { homeViewModel.updateLengthEvent(it) },
-        calculateValues = { homeViewModel.calculateValues() },
-        numProjectsPerJudge = numProjectsPerJudge.value.toString(),
-        timePerProject = timePerProject.value.toString(),
-        projects = projects.value,
-        hackathons = hackathons.value,
-        judges = judges.value
+        navigateToManualCalculationScreen = {
+            navController.navigate(Screen.ManualCalculationScreen.route)
+        },
+        navigateToHackathonSelectionScreen = {
+            navController.navigate(Screen.HackathonSelectionScreen.route)
+        }
     )
 }
 
 @Composable
 fun HomeContent(
-    modifier: Modifier = Modifier.fillMaxWidth(),
-    numProjects: String,
-    onNumProjectsChanged: (String) -> Unit,
-    numJudges: String,
-    onNumJudgesChanged: (String) -> Unit,
-    numPassThroughs: String,
-    onNumPassThroughsChanged: (String) -> Unit,
-    lengthEvent: String,
-    onLengthEventChanged: (String) -> Unit,
-    calculateValues: () -> Unit,
-    numProjectsPerJudge: String,
-    timePerProject: String,
-    projects: List<Project>,
-    hackathons: List<Hackathon>,
-    judges: List<Judge>
+    navigateToManualCalculationScreen: () -> Unit,
+    navigateToHackathonSelectionScreen: () -> Unit
 ) {
     Column {
-        Row(modifier = modifier) {
-            TextField(
-                value = numProjects,
-                onValueChange = onNumProjectsChanged,
-                modifier = modifier,
-                label = { Text(text = "Number of Projects: ") }
-            )
+        Button(onClick = navigateToManualCalculationScreen) {
+            Text(text = "Manually Calculate")
         }
-        Row(modifier = modifier) {
-            TextField(
-                value = numJudges,
-                onValueChange = onNumJudgesChanged,
-                modifier = modifier,
-                label = { Text(text = "Number of Judges: ") }
-            )
-        }
-        Row(modifier = modifier) {
-            TextField(
-                value = numPassThroughs,
-                onValueChange = onNumPassThroughsChanged,
-                modifier = modifier,
-                label = { Text(text = "How Many Times Should Each Project Be Seen? ") }
-            )
-        }
-        Row(modifier = modifier) {
-            TextField(
-                value = lengthEvent,
-                onValueChange = onLengthEventChanged,
-                modifier = modifier,
-                label = { Text(text = "How Long Is Judging?(Minutes) ") }
-            )
-        }
-        Button(onClick = { calculateValues() }) {
-            Text(text = "Calculate")
-        }
-        Text(text = "Number of Projects Per Judge: $numProjectsPerJudge")
-        Text(text = "Time each judge should spend on each table (in Minutes): $timePerProject")
-
-        Surface(
-            modifier = Modifier.fillMaxWidth(),
-            color = Color.LightGray,
-        ) {
-            Column(
-                modifier = Modifier.verticalScroll(rememberScrollState()),
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                Text(
-                    text = "Project List",
-                    fontSize = 30.sp,
-                    fontWeight = W400
-                )
-                Column(
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    projects.forEach { project ->
-                        Text(text = project.fields.Name)
-                    }
-                }
-                Text(
-                    text = "Hackathon List",
-                    fontSize = 30.sp,
-                    fontWeight = W400
-                )
-                Column(
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    hackathons.forEach { hackathon ->
-                        Text(text = hackathon.fields.Name)
-                    }
-                }
-                Text(
-                    text = "Judge List",
-                    fontSize = 30.sp,
-                    fontWeight = W400
-                )
-                Column(
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    judges.forEach { judge ->
-                        Text(text = judge.fields.Name)
-                    }
-                }
-            }
+        Button(onClick = navigateToHackathonSelectionScreen) {
+            Text(text = "Select Hackathon")
         }
     }
 }
@@ -173,41 +60,7 @@ fun HomeContent(
 @Composable
 fun HomeContentPreview() {
     HomeContent(
-        numProjects = "100",
-        onNumProjectsChanged = {},
-        numJudges = "10",
-        onNumJudgesChanged = {},
-        numPassThroughs = "2",
-        onNumPassThroughsChanged = {},
-        lengthEvent = "180",
-        onLengthEventChanged = {},
-        calculateValues = {},
-        numProjectsPerJudge = "20",
-        timePerProject = "9",
-        projects = listOf(),
-        hackathons = listOf(),
-        judges = listOf()
-    )
-}
-
-@Preview
-@Preview(name = "dark mode", uiMode = Configuration.UI_MODE_NIGHT_YES)
-@Composable
-fun EmptyHomeContentPreview() {
-    HomeContent(
-        numProjects = "",
-        onNumProjectsChanged = {},
-        numJudges = "",
-        onNumJudgesChanged = {},
-        numPassThroughs = "",
-        onNumPassThroughsChanged = {},
-        lengthEvent = "",
-        onLengthEventChanged = {},
-        calculateValues = {},
-        numProjectsPerJudge = "",
-        timePerProject = "",
-        projects = listOf(),
-        hackathons = listOf(),
-        judges = listOf()
+        navigateToManualCalculationScreen = {},
+        navigateToHackathonSelectionScreen = {}
     )
 }
