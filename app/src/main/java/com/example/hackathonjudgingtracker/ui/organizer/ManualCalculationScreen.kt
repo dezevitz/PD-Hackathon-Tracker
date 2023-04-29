@@ -2,13 +2,16 @@ package com.example.hackathonjudgingtracker.ui.organizer
 
 import android.content.res.Configuration
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material.Button
 import androidx.compose.material.Text
 import androidx.compose.material.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 
@@ -17,21 +20,13 @@ import androidx.compose.ui.tooling.preview.Preview
 fun ManualCalculationScreen(
     manualCalculationViewModel: ManualCalculationViewModel = ManualCalculationViewModel()
 ) {
-    val numProjects = manualCalculationViewModel.numProjects.collectAsState()
-    val numJudges = manualCalculationViewModel.numJudges.collectAsState()
-    val numPassThroughs = manualCalculationViewModel.numPassThroughs.collectAsState()
-    val lengthEvent = manualCalculationViewModel.lengthEvent.collectAsState()
     val numProjectsPerJudge = manualCalculationViewModel.numProjectsPerJudge.collectAsState()
     val timePerProject = manualCalculationViewModel.timePerProject.collectAsState()
 
     CalculateValuesContent(
-        numProjects = numProjects.value,
         onNumProjectsChanged = { manualCalculationViewModel.updateNumProjects(it) },
-        numJudges = numJudges.value,
         onNumJudgesChanged = { manualCalculationViewModel.updateNumJudges(it) },
-        numPassThroughs = numPassThroughs.value,
         onNumPassThroughsChanged = { manualCalculationViewModel.updateNumPassThroughs(it) },
-        lengthEvent = lengthEvent.value,
         onLengthEventChanged = { manualCalculationViewModel.updateLengthEvent(it) },
         calculateValues = { manualCalculationViewModel.calculateValues() },
         numProjectsPerJudge = numProjectsPerJudge.value.toString(),
@@ -41,52 +36,32 @@ fun ManualCalculationScreen(
 
 @Composable
 fun CalculateValuesContent(
-    modifier: Modifier = Modifier.fillMaxWidth(),
-    numProjects: String,
+    modifier: Modifier = Modifier,
     onNumProjectsChanged: (String) -> Unit,
-    numJudges: String,
     onNumJudgesChanged: (String) -> Unit,
-    numPassThroughs: String,
     onNumPassThroughsChanged: (String) -> Unit,
-    lengthEvent: String,
     onLengthEventChanged: (String) -> Unit,
     calculateValues: () -> Unit,
     numProjectsPerJudge: String,
     timePerProject: String,
 ) {
-    Column {
-        Row(modifier = modifier) {
-            TextField(
-                value = numProjects,
-                onValueChange = onNumProjectsChanged,
-                modifier = modifier,
-                label = { Text(text = "Number of Projects: ") }
-            )
-        }
-        Row(modifier = modifier) {
-            TextField(
-                value = numJudges,
-                onValueChange = onNumJudgesChanged,
-                modifier = modifier,
-                label = { Text(text = "Number of Judges: ") }
-            )
-        }
-        Row(modifier = modifier) {
-            TextField(
-                value = numPassThroughs,
-                onValueChange = onNumPassThroughsChanged,
-                modifier = modifier,
-                label = { Text(text = "How Many Times Should Each Project Be Seen? ") }
-            )
-        }
-        Row(modifier = modifier) {
-            TextField(
-                value = lengthEvent,
-                onValueChange = onLengthEventChanged,
-                modifier = modifier,
-                label = { Text(text = "How Long Is Judging?(Minutes) ") }
-            )
-        }
+    Column(modifier) {
+        HackathonTextField(
+            onValueChange = onNumProjectsChanged,
+            label = "Number of Projects: "
+        )
+        HackathonTextField(
+            onValueChange = onNumJudgesChanged,
+            label = "Number of Judges: "
+        )
+        HackathonTextField(
+            onValueChange = onNumPassThroughsChanged,
+            label = "How Many Times Should Each Project Be Seen? "
+        )
+        HackathonTextField(
+            onValueChange = onLengthEventChanged,
+            label = "How Long Is Judging?(Minutes) "
+        )
         Button(onClick = { calculateValues() }) {
             Text(text = "Calculate")
         }
@@ -95,18 +70,34 @@ fun CalculateValuesContent(
     }
 }
 
+@Composable
+private fun HackathonTextField(
+    onValueChange: (String) -> Unit,
+    label: String,
+    modifier: Modifier = Modifier
+) {
+    var localValue by remember {
+        mutableStateOf("")
+    }
+    TextField(
+        value = localValue,
+        onValueChange = {
+            onValueChange(it)
+            localValue = it
+        },
+        label = { Text(text = label) },
+        modifier = modifier.fillMaxWidth()
+    )
+}
+
 @Preview
 @Preview(name = "dark mode", uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
 fun CalculateValuesContentPreview() {
     CalculateValuesContent(
-        numProjects = "100",
         onNumProjectsChanged = {},
-        numJudges = "10",
         onNumJudgesChanged = {},
-        numPassThroughs = "2",
         onNumPassThroughsChanged = {},
-        lengthEvent = "180",
         onLengthEventChanged = {},
         calculateValues = {},
         numProjectsPerJudge = "20",
@@ -119,13 +110,9 @@ fun CalculateValuesContentPreview() {
 @Composable
 fun EmptyCalculateValuesContentPreview() {
     CalculateValuesContent(
-        numProjects = "",
         onNumProjectsChanged = {},
-        numJudges = "",
         onNumJudgesChanged = {},
-        numPassThroughs = "",
         onNumPassThroughsChanged = {},
-        lengthEvent = "",
         onLengthEventChanged = {},
         calculateValues = {},
         numProjectsPerJudge = "",
