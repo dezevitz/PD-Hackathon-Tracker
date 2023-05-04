@@ -1,98 +1,85 @@
-package com.example.hackathonjudgingtracker.ui.organizer
-
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.Surface
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.Icon
+import androidx.compose.material.IconButton
+import androidx.compose.material.ListItem
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
+import androidx.compose.material.TopAppBar
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.font.FontWeight.Companion.W400
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.sp
+import androidx.compose.ui.unit.dp
+import androidx.navigation.NavHostController
 import com.example.hackathonjudgingtracker.data.domain.hackathons.Hackathon
-import com.example.hackathonjudgingtracker.data.domain.judges.Judge
-import com.example.hackathonjudgingtracker.data.domain.projects.Project
+import com.example.hackathonjudgingtracker.navigation.MainScreens
 
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun HackathonSelectionScreen(
-    hackathonSelectionViewModel: HackathonSelectionViewModel = HackathonSelectionViewModel()
+    navController: NavHostController,
+    viewModel: HackathonSelectionViewModel = HackathonSelectionViewModel()
 ) {
-    hackathonSelectionViewModel.getValues()
+    // TODO Hoist all these values (currently hoisting them causes recomp)
+    val hackathonListState by viewModel.hackathonUiState.collectAsState()
 
-    val hackathonUiState = hackathonSelectionViewModel.hackathonUiState.collectAsState()
+    val onHackathonSelected: (Hackathon) -> Unit = { // TODO Pass the hackathon as a navarg
+        navController.navigate(MainScreens.ProjectScreen.route)
+    }
 
-    HackathonSelectionContent(
-        projects = hackathonUiState.value.projectList,
-        hackathons = hackathonUiState.value.hackathonList,
-        judges = hackathonUiState.value.judgeList
-    )
-}
+    LaunchedEffect(viewModel) {
+        viewModel.getValues()
+    }
 
-@Composable
-fun HackathonSelectionContent(
-    projects: List<Project>,
-    hackathons: List<Hackathon>,
-    judges: List<Judge>
-) {
-    Surface(
-        modifier = Modifier.fillMaxWidth(),
-        color = Color.LightGray,
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = { Text("Select a Hackathon") },
+                backgroundColor = MaterialTheme.colors.primary,
+                contentColor = Color.White,
+                navigationIcon = {
+                    IconButton(onClick = { navController.popBackStack() }) {
+                        Icon(Icons.Default.ArrowBack, contentDescription = "Back")
+                    }
+                }
+            )
+        }
     ) {
-        Column(
-            modifier = Modifier.verticalScroll(rememberScrollState()),
-            horizontalAlignment = Alignment.CenterHorizontally
+        Box(
+            modifier = Modifier.fillMaxSize(),
+            contentAlignment = Alignment.Center
         ) {
-            Text(
-                text = "Project List",
-                fontSize = 30.sp,
-                fontWeight = W400
-            )
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                projects.forEach { project ->
-                    Text(text = project.fields.Name)
-                }
+            if (hackathonListState.isLoading) {
+                CircularProgressIndicator(
+                    color = MaterialTheme.colors.primary,
+                    strokeWidth = 4.dp,
+                    modifier = Modifier.size(75.dp),
+                )
             }
-            Text(
-                text = "Hackathon List",
-                fontSize = 30.sp,
-                fontWeight = W400
-            )
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                hackathons.forEach { hackathon ->
-                    Text(text = hackathon.fields.Name)
-                }
-            }
-            Text(
-                text = "Judge List",
-                fontSize = 30.sp,
-                fontWeight = W400
-            )
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                judges.forEach { judge ->
-                    Text(text = judge.fields.Name)
-                }
+        }
+        LazyColumn {
+            items(hackathonListState.hackathonList) { hackathon ->
+                ListItem(
+                    text = { Text(hackathon.fields.Name) },
+                    modifier = Modifier
+                        .clickable { onHackathonSelected(hackathon) }
+                        .border(1.dp, Color.Black),
+                )
             }
         }
     }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun HackathonSelectionScreenPreview() {
-    HackathonSelectionContent(
-        projects = listOf(),
-        hackathons = listOf(),
-        judges = listOf(),
-    )
 }

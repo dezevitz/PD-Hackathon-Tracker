@@ -26,7 +26,7 @@ fun ManualCalculationScreen(
     CalculateValuesContent(
         onNumProjectsChanged = { manualCalculationViewModel.updateNumProjects(it) },
         onNumJudgesChanged = { manualCalculationViewModel.updateNumJudges(it) },
-        onNumPassThroughsChanged = { manualCalculationViewModel.updateNumPassThroughs(it) },
+        onNumPassThroughChanged = { manualCalculationViewModel.updateNumPassThroughs(it) },
         onLengthEventChanged = { manualCalculationViewModel.updateLengthEvent(it) },
         calculateValues = { manualCalculationViewModel.calculateValues() },
         numProjectsPerJudge = numProjectsPerJudge.value.toString(),
@@ -39,7 +39,7 @@ fun CalculateValuesContent(
     modifier: Modifier = Modifier,
     onNumProjectsChanged: (String) -> Unit,
     onNumJudgesChanged: (String) -> Unit,
-    onNumPassThroughsChanged: (String) -> Unit,
+    onNumPassThroughChanged: (String) -> Unit,
     onLengthEventChanged: (String) -> Unit,
     calculateValues: () -> Unit,
     numProjectsPerJudge: String,
@@ -55,7 +55,7 @@ fun CalculateValuesContent(
             label = "Number of Judges: "
         )
         HackathonTextField(
-            onValueChange = onNumPassThroughsChanged,
+            onValueChange = onNumPassThroughChanged,
             label = "How Many Times Should Each Project Be Seen? "
         )
         HackathonTextField(
@@ -97,7 +97,7 @@ fun CalculateValuesContentPreview() {
     CalculateValuesContent(
         onNumProjectsChanged = {},
         onNumJudgesChanged = {},
-        onNumPassThroughsChanged = {},
+        onNumPassThroughChanged = {},
         onLengthEventChanged = {},
         calculateValues = {},
         numProjectsPerJudge = "20",
@@ -112,7 +112,7 @@ fun EmptyCalculateValuesContentPreview() {
     CalculateValuesContent(
         onNumProjectsChanged = {},
         onNumJudgesChanged = {},
-        onNumPassThroughsChanged = {},
+        onNumPassThroughChanged = {},
         onLengthEventChanged = {},
         calculateValues = {},
         numProjectsPerJudge = "",
