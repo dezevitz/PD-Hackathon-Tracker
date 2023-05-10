@@ -41,10 +41,6 @@ fun HackathonSelectionScreen(
         navController.navigate(MainScreens.ProjectScreen.route)
     }
 
-    LaunchedEffect(viewModel) {
-        viewModel.getValues()
-    }
-
     Scaffold(
         topBar = {
             TopAppBar(

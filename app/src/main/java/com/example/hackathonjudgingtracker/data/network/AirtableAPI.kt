@@ -9,17 +9,11 @@ import retrofit2.http.Header
 
 interface AirtableAPI {
     @GET("tbl4qe3bDy8LZNxEk")
-    suspend fun getProjects(
-        @Header("Authorization") authorization: String = "Bearer ${BuildConfig.AIRTABLE_PAT}"
-    ): ProjectRecords
+    suspend fun getProjects(): ProjectRecords
 
     @GET("tblEnmYBQnPOZpy1d")
-    suspend fun getHackathon(
-        @Header("Authorization") authorization: String = "Bearer ${BuildConfig.AIRTABLE_PAT}"
-    ): HackathonRecords
+    suspend fun getHackathon(): HackathonRecords
 
     @GET("tbl9cfvyw8GK8MBRi")
-    suspend fun getJudges(
-        @Header("Authorization") authorization: String = "Bearer ${BuildConfig.AIRTABLE_PAT}"
-    ): JudgeRecords
+    suspend fun getJudges(): JudgeRecords
 }

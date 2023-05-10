@@ -18,7 +18,7 @@ class HackathonSelectionViewModel : ViewModel() {
     private val _hackathonUiState = MutableStateFlow(HackathonUiState())
     val hackathonUiState: StateFlow<HackathonUiState> = _hackathonUiState.asStateFlow()
 
-    fun getValues() {
+    init {
         viewModelScope.launch {
             val hackathonList = AirtableNetwork.retrofit.getHackathon().records
             _hackathonUiState.value = _hackathonUiState.value.copy(
